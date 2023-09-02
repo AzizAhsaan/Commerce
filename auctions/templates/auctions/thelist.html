@@ -1,0 +1,81 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+<div class="container">
+    {% if message %}
+    {% if UPDATE %}
+    <div class="alert alert-success" role="alert">
+        {{message}}
+    </div>
+    {% else %}
+    <div class="alert alert-danger" role="alert">
+        {{message}}
+    </div>
+    {% endif %}
+
+    {% endif %}
+
+</div>
+{% if user.is_authenticated %}
+
+{% if thelists.active and owner == thelists.price.owner %}
+    <div class="alert alert-success" role="alert">
+        You have won!
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+    <div>
+        {% if user.is_authenticated and thelists.active %}
+        {% if istheowner %}
+        <form action="{% url 'closeauction' list_id=thelists.id %}" method="POST">
+            {% csrf_token %}
+            <button class="btn btn-danger" type="submit">close the auction</button>
+        </form>
+        {% endif %}
+          {% if thelistisinthewatchlist %}
+          <form action="{% url 'removewatchlist' list_id=thelists.id %}" method="POST">
+            {% csrf_token %}
+            <button class="btn btn-danger" type="submit">Remove from the WatchList</button>
+        </form>
+        {% else %}
+        <form action="{% url 'AddWatchList' list_id=thelists.id %}" method="POST">
+            {% csrf_token %}
+            <button class="btn btn-success" type="submit">add from the WatchList</button>
+        </form>
+        
+          {% endif %}
+        {% endif %}
+
+    </div>
+
+    <h2>The Choosen List {{thelists.name}}</h2>
+    <h1> The Title:  {{thelists.name}}</h1>
+    <h1>The Description: {{thelists.description}}</h1>
+    <h1> The Price: {{thelists.price.thebid}}</h1>
+    {% if user.is_authenticated %}
+    <form action="{% url 'addbid2' list_id=thelists.id %}" method="POST">
+        {% csrf_token %}
+       <input type="number" name="bidss" placeholder="bids"> 
+       <br>
+       <button type="submit">enter the bid</button>
+    </form>
+    {% endif %}
+    {{MESSAGE}}
+    <h1>The Owner: {{thelists.owner}}</h1>
+    <img style="width: 25rem; height: 15rem;" src="{{thelists.image}}" alt="w">
+    <div>
+        <h1>The Comments</h1>
+        {% if user.is_authenticated %}
+        <form action="{% url 'addcomment' list_id=thelists.id  %}" method="POST">
+            {% csrf_token %}
+           <input type="text" name="comment" placeholder="comments"> 
+           <br>
+           <button type="submit">enter the comment</button>
+        </form>
+        {% endif %}
+        <br>
+        {% for allcomment in allcomments %}
+        <h1>{{allcomment.comments}}</h1>
+        {% endfor %}
+    </div>
+{% endblock %}
